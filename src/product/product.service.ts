@@ -74,7 +74,8 @@ export class ProductService {
 			where: prismaSearchTermFilter,
 			orderBy: prismaSort,
 			skip,
-			take: perPage
+			take: perPage,
+			select: returnProguctObject
 		})
 
 		return {
