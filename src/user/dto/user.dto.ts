@@ -3,7 +3,7 @@ import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator'
 export class UserDto {
 	@IsOptional()
 	@IsEmail()
-	email: string
+	email?: string
 
 	@MinLength(8, {
 		message: 'Пароль должен быть не менее 8 символов'
@@ -14,11 +14,11 @@ export class UserDto {
 
 	@IsOptional()
 	@IsString()
-	avatarPath: string
+	avatarPath?: string
 
 	@IsOptional()
 	@IsString()
-	name: string
+	name?: string
 
 	@IsOptional()
 	@IsString()

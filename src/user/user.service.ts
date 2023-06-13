@@ -8,6 +8,8 @@ import { returnUserObject } from './return-user.object'
 import { Prisma } from '@prisma/client'
 import { UserDto } from './dto/user.dto'
 import { hash } from 'argon2'
+import { returnCategoryObject } from 'src/category/return-category.object'
+import { returnReviewObject } from 'src/review/return-review.object'
 
 @Injectable()
 export class UserService {
@@ -26,27 +28,35 @@ export class UserService {
 						name: true,
 						price: true,
 						images: true,
-						slug: true
+						slug: true,
+						reviews: {
+							select: returnReviewObject
+						},
+						category: {
+							select: returnCategoryObject
+						}
 					}
 				},
 				...selectPrisma
 			}
 		})
 
-		if (!user) throw new NotFoundException('User not found')
+		if (!user) throw new NotFoundException(`User not found`)
 
 		return user
 	}
 
 	async updateProfile(id: number, dto: UserDto) {
-		const isSameUser = await this.prismaService.user.findUnique({
-			where: {
-				email: dto.email
-			}
-		})
+		if (dto.email) {
+			const isSameUser = await this.prismaService.user.findUnique({
+				where: {
+					email: dto.email
+				}
+			})
 
-		if (isSameUser && id !== isSameUser.id)
-			throw new BadRequestException('Email already use')
+			if (isSameUser && id !== isSameUser.id)
+				throw new BadRequestException('Email already use')
+		}
 
 		const user = this.byId(id)
 
@@ -64,6 +74,12 @@ export class UserService {
 					: (await user).password
 			}
 		})
+	}
+
+	async favorites(userId: number) {
+		const user = await this.byId(userId)
+
+		return 'favorites'
 	}
 
 	async toggleFavorite(productId: number, userId: number) {
